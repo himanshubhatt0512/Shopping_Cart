@@ -10,13 +10,69 @@ class CartItem extends React.Component{
             img: ''
         }
         //this.increaseQuatity = this.increaseQuatity.bind(this);
+        //this.testing();
     }
 
+    
+//  testing () {
+//     const promise = new Promise((resolve, reject) => {
+//       setTimeout(() => {
+//         resolve('done');
+//       }, 5000);
+//     })
+
+//     promise.then(() => {
+//       // setState acts like a synchronus call
+//       this.setState({ qty: this.state.qty + 10 });
+
+//       this.setState({ qty: this.state.qty + 10 });
+
+//       this.setState({ qty: this.state.qty + 10 });
+
+//       console.log('state', this.state);
+//     });
+//   }
+
     increaseQuatity=()=> {
-        console.log('this.state', this.state);
+        //this.state.qty +=1;
+        //console.log('this.state', this.state);
+        
+        //setState form 1
+        // this.setState({
+        //     qty: this.state.qty +1
+        // },() =>{
+        //     console.log('this.stae', this.state)
+        // });
+
+        //setState form 2 - if you require previous state
+        this.setState((prevState) =>{
+            return{
+                qty : prevState.qty +1
+            }
+        },() =>{
+            console.log('this.state', this.state)
+        });
+       
+    }
+
+    decreaseQuatity = ()=>{
+        console.log("this.state", this.state);
+
+        this.setState ((prevState)=>{
+            const val = prevState.qty;
+            if(val ===0){
+                return 0;
+            }else{
+                return{        
+                    qty : prevState.qty -1  
+            }
+            }
+            
+        })
     }
 
     render(){
+        console.log("render");
         const { price, title, qty }= this.state;
         return(
             <div className='cart-item'>
@@ -40,6 +96,8 @@ class CartItem extends React.Component{
                             alt='decrease' 
                             className='action-icons' 
                             src='https://cdn-icons-png.flaticon.com/512/992/992683.png' 
+                            onClick={this.decreaseQuatity}
+
                         />
                         <img 
                             alt='delete' 
