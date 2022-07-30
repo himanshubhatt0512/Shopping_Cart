@@ -1,7 +1,7 @@
 import React from 'react';
 
 class CartItem extends React.Component{
-
+//
 //  testing () {
 //     const promise = new Promise((resolve, reject) => {
 //       setTimeout(() => {
@@ -21,47 +21,53 @@ class CartItem extends React.Component{
 //     });
 //   }
 
-    increaseQuatity=()=> {
-        //this.state.qty +=1;
-        //console.log('this.state', this.state);
+//    increaseQuatity=()=> {
+//         this.state.qty +=1;
+//         console.log('this.state', this.state);
         
-        //setState form 1
-        // this.setState({
-        //     qty: this.state.qty +1
-        // },() =>{
-        //     console.log('this.stae', this.state)
-        // });
+//         setState form 1
+//         this.setState({
+//             qty: this.state.qty +1
+//         },() =>{
+//             console.log('this.stae', this.state)
+//         });
 
-        //setState form 2 - if you require previous state
-        this.setState((prevState) =>{
-            return{
-                qty : prevState.qty +1
-            }
-        },() =>{
-            console.log('this.state', this.state)
-        });
+//         setState form 2 - if you require previous state
+//         this.setState((prevState) =>{
+//             return{
+//                 qty : prevState.qty +1
+//             }
+//         },() =>{
+//             console.log('this.state', this.state)
+//         });
        
-    }
+//     }
 
-    decreaseQuatity = ()=>{
-        console.log("this.state", this.state);
+//     decreaseQuatity = ()=>{
+//         console.log("this.state", this.state);
 
-        this.setState ((prevState)=>{
-            const val = prevState.qty;
-            if(val ===0){
-                return 0;
-            }else{
-                return{        
-                    qty : prevState.qty -1  
-            }
-            }
+//         this.setState ((prevState)=>{
+//             const val = prevState.qty;
+//             if(val ===0){
+//                 return 0;
+//             }else{
+//                 return{        
+//                     qty : prevState.qty -1  
+//             }
+//             }
             
-        })
-    }
+//         })
+//     }
 
     render(){
         console.log("this.props", this.props);
         const { price, title, qty }= this.props.product;
+        const { 
+            product, 
+            onIncreaseQuantity, 
+            onDecreaseQuantity,
+            onDeleteProduct
+        }= this.props;
         return(
             <div className='cart-item'>
                 <div className='left-block'>
@@ -78,19 +84,20 @@ class CartItem extends React.Component{
                             alt='increase'
                             className='action-icons'
                             src='https://cdn-icons-png.flaticon.com/512/992/992651.png' 
-                            onClick={this.increaseQuatity}
+                            onClick={() => onIncreaseQuantity(product)}
                          />
                         <img 
                             alt='decrease' 
                             className='action-icons' 
                             src='https://cdn-icons-png.flaticon.com/512/992/992683.png' 
-                            onClick={this.decreaseQuatity}
+                            onClick={() => onDecreaseQuantity(product)}
 
                         />
                         <img 
                             alt='delete' 
                             className='action-icons' 
                             src='https://cdn-icons-png.flaticon.com/512/484/484662.png' 
+                            onClick={()=> onDeleteProduct(product.id)}
                         />
                     </div>
                 </div>
