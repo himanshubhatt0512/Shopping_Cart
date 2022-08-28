@@ -1,53 +1,97 @@
 import React from "react";
 import Cart from './Cart';
 import Navbar from "./Navbar";
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
 
 class App extends React.Component {
   constructor (){
     super();
     this.state = {
-        products: [
-            {
-                price : 99,
-                title: 'Watch',
-                qty: 1,
-                img: 'https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OXx8d2F0Y2h8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60',
-                id : 1
-            },
-            {
-                price : 999,
-                title: 'Mobile Phone',
-                qty: 10,
-                img: 'https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8bW9iaWxlJTIwcGhvbmV8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60',
-                id : 2,
-            },
-            {
-                price : 89999,
-                title: 'Laptop',
-                qty: 4,
-                img: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=872&q=80',
-                id : 3
-            }
-        ]
+        products: [],
+        loading: true
     }
+    this.db = firebase.firestore();
+
     //this.increaseQuatity = this.increaseQuatity.bind(this);
     //this.testing();
   }
 
+  componentDidMount () {
+    // firebase
+    //     .firestore()
+    //     .collection('products')
+    //     .get()
+    //     .then((snapshot) => {
+    //         console.log(snapshot);
+            
+    //         snapshot.docs.map((doc) => {
+    //             console.log(doc.data())
+    //         });
+
+    //         const products= snapshot.docs.map((doc) =>{
+    //             const data = doc.data();
+    //             data['id'] = doc.id;
+    //             return data;
+    //         })
+
+    //         this.setState({
+    //             products,
+    //             loading: false 
+    //         })            
+    //     })
+
+
+    this.db
+        .collection('products')
+        // .where('price', '>', 999)
+        // .where('title', '==', 'Camera')
+        .orderBy('price', 'desc')
+        .onSnapshot((snapshot) => {
+          console.log(snapshot);
+          
+          snapshot.docs.map((doc) => {
+              console.log(doc.data())
+          });
+
+          const products= snapshot.docs.map((doc) =>{
+              const data = doc.data();
+              data['id'] = doc.id;
+              return data;
+          })
+
+          this.setState({
+              products,
+              loading: false 
+          })            
+      })
+}
+
   handleIncreaseQuantity = (product) => {
-      console.log('hey mofo increase the qty', product);
       const { products } = this.state;
       const index = products.indexOf((product));
 
-      products[index].qty += 1;
+      // products[index].qty += 1;
 
-      this.setState({
-          products
-      })
+      // this.setState({
+      //     products
+      // })
+
+      const docRef = this.db.collection('products').doc(products[index].id);
+
+      docRef
+        .update({
+          qty: products[index].qty + 1
+        })
+        .then(()=>{
+          console.log('Updated Succesfully')
+        })
+        .catch((error) =>  {
+          console.log('Error: ', error);
+        })
   }
 
   handleDecreaseQuantity = (product) =>{
-      console.log('hey mofo increase the qty', product);
       const {products} = this.state;
       const index = products.indexOf((product));
 
@@ -55,20 +99,45 @@ class App extends React.Component {
           return 0;
       }
 
-      products[index].qty -= 1;
+      // products[index].qty -= 1;
 
-      this.setState({
-          products : products
-      })
+      // this.setState({
+      //     products : products
+      // })
+
+      const docRef = this.db.collection('products').doc(products[index].id);
+
+      docRef
+        .update({
+          qty: products[index].qty - 1
+        })
+        .then(()=>{
+          console.log('Updated Succesfully')
+        })
+        .catch((error) =>  {
+          console.log('Error: ', error);
+        })      
+      
   }
 
   handleDeleteProduct = (id) =>{
       const { products }= this.state;
-      const items = products.filter((item) => item.id !== id);
+      // const items = products.filter((item) => item.id !== id);
 
-      this.setState ({
-          products : items
-      })
+      // this.setState ({
+      //     products : items
+      // })
+
+      const docRef = this.db.collection('products').doc(id);
+
+      docRef
+        .delete()
+        .then(()=>{
+          console.log('Deleted Succesfully')
+        })
+        .catch((error) =>  {
+          console.log('Error: ', error);
+        })  
   }
 
   getCartCount = () => {
@@ -97,18 +166,37 @@ class App extends React.Component {
       return cartTotal;
   }
 
+  addProduct = () => {
+    this.db
+      .collection('products')
+      .add({
+        img: '',
+        price: 900,
+        qty: 3,
+        title: 'washing machine'
+      })
+      .then((docRef) => {
+        console.log('Product has been added', docRef);
+      })
+      .catch((error) =>{
+        console.log('Error : ',error);  
+      })
+  }
+
   render (){
-    const {products} = this.state;
+    const {products, loading} = this.state;
 
     return (
       <div className="App">
         <Navbar count = {this.getCartCount()} />
+        {/*<button onClick={this.addProduct} style = {{padding:20, fontSize: 20}}>Add a product</button>*/}
         <Cart
          products = {products}
          onIncreaseQuantity = {this.handleIncreaseQuantity}
          onDecreaseQuantity = {this.handleDecreaseQuantity}
          onDeleteProduct = {this.handleDeleteProduct}  
          />
+         {loading && <h1>loading Products....</h1>}
          <div style={{padding:10, fontSize:20}}>TOTAL : {this.getCartTotal()}</div>
       </div>
     );

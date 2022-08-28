@@ -2,8 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
-import * as firebase from "firebase";
-import { initializeApp } from "firebase/app";
+import firebase from 'firebase/compat/app';
 import 'firebase/firestore';
 
 const firebaseConfig = {
@@ -16,7 +15,12 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+firebase.initializeApp(firebaseConfig);
+
+//const app = initializeApp(firebaseConfig);
+// const db = firebase.firestore();
+// export default db;
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
